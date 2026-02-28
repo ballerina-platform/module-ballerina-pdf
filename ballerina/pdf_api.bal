@@ -21,10 +21,7 @@ import ballerina/jballerina.java;
 # Converts HTML content to PDF bytes.
 #
 # + html - The HTML string to convert (can be a full document or fragment).
-#          Encoding is handled at the I/O boundary — use io:fileReadString() to read
-#          HTML files, which decodes from UTF-8 by default. By the time the string reaches
-#          this function, it is already Unicode.
-# + options - Conversion options (all optional with defaults)
+# + options - Conversion options 
 # + return - PDF file content as a byte array, or an error
 public isolated function parseHtml(string html, *ConversionOptions options)
     returns byte[]|Error = @java:Method {

@@ -82,15 +82,3 @@ File and URL variants are also available: `fileToImages()` and `urlToImages()`.
 The `pdf` module provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerina-pdf/tree/main/examples/).
 
 1. [HTML to PDF conversion](https://github.com/ballerina-platform/module-ballerina-pdf/tree/main/examples/html-to-pdf/) — Reads an HTML report file and converts it to PDF.
-
-## Known limitations
-
-The HTML/CSS renderer supports CSS 2.1 core layout (block, inline, float, table, absolute/relative positioning) but has gaps compared to browser rendering. Key limitations:
-
-- **Layout:** No flexbox, CSS Grid, or multi-column layout. No `position: fixed` or `position: sticky`.
-- **Tables:** No `rowspan`, no `<caption>`, no `table-layout: fixed` algorithm.
-- **Text:** No `text-align: justify`, no hyphenation, no `text-indent`, no `text-overflow: ellipsis`.
-- **CSS features:** No `::before`/`::after` pseudo-elements, no CSS counters, no `calc()`, no custom properties (`var()`), no `@import`, no `@media` queries (print/all media types are supported).
-- **Visual:** No CSS gradients, no `text-shadow`, no CSS transforms, no SVG rendering. Only `solid` border style is supported.
-- **Fonts:** No `@font-face` (use the `customFonts` option instead). No OpenType features. Bundled fonts: Liberation Sans and Liberation Serif (metrically compatible with Arial and Times New Roman).
-- **Page control:** No `page-break-inside: avoid`, no orphans/widows control, no `@page` margin boxes.
