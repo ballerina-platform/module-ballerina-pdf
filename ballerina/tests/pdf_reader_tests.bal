@@ -108,6 +108,12 @@ function testInvalidUrlRejectsGracefully() {
     test:assertTrue(result is ReadError, "Expected ReadError for invalid URL");
 }
 
+@test:Config {}
+function testUrlToImagesInvalidUrl() {
+    string[]|Error result = urlToImages("not a valid url");
+    test:assertTrue(result is ReadError, "Expected ReadError for invalid URL");
+}
+
 // --- Round-trip tests ---
 
 @test:Config {}

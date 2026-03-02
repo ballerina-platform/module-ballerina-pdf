@@ -127,6 +127,25 @@ function testErrorTypeIsError() {
 }
 
 @test:Config {}
+function testConversionWithLegalPageSize() returns error? {
+    byte[] pdf = check parseHtml("<p>Legal page</p>", pageSize = LEGAL);
+    assertValidPdf(pdf, "Legal page size");
+}
+
+@test:Config {}
+function testConversionWithCustomPageSize() returns error? {
+    CustomPageSize custom = {width: 400.0, height: 600.0};
+    byte[] pdf = check parseHtml("<p>Custom page</p>", pageSize = custom);
+    assertValidPdf(pdf, "Custom page size");
+}
+
+@test:Config {}
+function testNegativeMarginReturnsRenderError() {
+    byte[]|Error result = parseHtml("<p>test</p>", margins = {top: -1.0});
+    test:assertTrue(result is RenderError, "Expected RenderError for negative margin");
+}
+
+@test:Config {}
 function testConversionWithCustomFont() returns error? {
     byte[] fontBytes = check io:fileReadBytes("tests/resources/LiberationSans-Regular.ttf");
     Font[] fonts = [{family: "TestFont", content: fontBytes}];

@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
@@ -118,6 +119,55 @@ class FontManagerTest {
         PDFont font = fontManager.getDefaultFont();
         float lineHeight = fontManager.getLineHeight(font, 12f);
         assertTrue(lineHeight > 0);
+    }
+
+    // --- getAscent / getDescent ---
+
+    @Test
+    void ascentIsPositive() {
+        PDFont font = fontManager.getDefaultFont();
+        float ascent = fontManager.getAscent(font, 12f);
+        assertTrue(ascent > 0, "Ascent should be positive");
+    }
+
+    @Test
+    void descentIsPositive() {
+        PDFont font = fontManager.getDefaultFont();
+        float descent = fontManager.getDescent(font, 12f);
+        assertTrue(descent > 0, "Descent should be positive (absolute value)");
+    }
+
+    @Test
+    void ascentPlusDescentLessThanLineHeight() {
+        PDFont font = fontManager.getDefaultFont();
+        float ascent = fontManager.getAscent(font, 12f);
+        float descent = fontManager.getDescent(font, 12f);
+        float lineHeight = fontManager.getLineHeight(font, 12f);
+        assertTrue(ascent + descent <= lineHeight,
+                "Ascent + descent should be <= line height (line height includes leading)");
+    }
+
+    // --- canEncode ---
+
+    @Test
+    void canEncodeReturnsTrueForAscii() {
+        PDFont font = fontManager.getDefaultFont();
+        assertTrue(FontManager.canEncode(font, 'A'));
+    }
+
+    @Test
+    void canEncodeHandlesExceptionGracefully() {
+        PDFont font = fontManager.getDefaultFont();
+        // Private Use Area character — font likely can't encode it, but should not throw
+        assertDoesNotThrow(() -> FontManager.canEncode(font, '\uF8FF'));
+    }
+
+    // --- measureText edge cases ---
+
+    @Test
+    void nullTextMeasuresZero() {
+        PDFont font = fontManager.getDefaultFont();
+        assertEquals(0, fontManager.measureText(null, font, 12f));
     }
 
     // --- Font-family chain resolution tests ---

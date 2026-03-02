@@ -1,6 +1,6 @@
 # Ballerina PDF Module
 
-[![Build](https://github.com/ballerina-platform/module-ballerina-pdf/actions/workflows/ci.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerina-pdf/actions/workflows/ci.yml)
+[![Build](https://github.com/ballerina-platform/module-ballerina-pdf/actions/workflows/build-timestamped-master.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerina-pdf/actions/workflows/build-timestamped-master.yml)
 [![codecov](https://codecov.io/gh/ballerina-platform/module-ballerina-pdf/branch/main/graph/badge.svg)](https://codecov.io/gh/ballerina-platform/module-ballerina-pdf)
 [![Trivy](https://github.com/ballerina-platform/module-ballerina-pdf/actions/workflows/trivy-scan.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerina-pdf/actions/workflows/trivy-scan.yml)
 [![GraalVM Check](https://github.com/ballerina-platform/module-ballerina-pdf/actions/workflows/build-with-bal-test-graalvm.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerina-pdf/actions/workflows/build-with-bal-test-graalvm.yml)
