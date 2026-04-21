@@ -10,7 +10,7 @@ distribution-version = "2201.13.1"
 [[package]]
 org = "ballerina"
 name = "io"
-version = "1.8.0"
+version = "1.8.1"
 scope = "testOnly"
 dependencies = [
 	{org = "ballerina", name = "jballerina.java"},
@@ -87,7 +87,7 @@ dependencies = [
 [[package]]
 org = "ballerina"
 name = "pdf"
-version = "0.9.0"
+version = "0.9.1"
 dependencies = [
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"},
