@@ -140,6 +140,21 @@ public class ConversionOptions {
         this.customMarginsSet = customMarginsSet;
     }
 
+    /**
+     * Backward-compatible constructor for tests. Both custom flags default to {@code false},
+     * meaning CSS {@code @page} rules and A4 defaults apply as fallbacks.
+     */
+    public ConversionOptions(float fallbackFontSize,
+                            float pageWidth, float pageHeight,
+                            float marginTop, float marginRight,
+                            float marginBottom, float marginLeft,
+                            String additionalCss,
+                            List<FontEntry> customFonts, Integer maxPages) {
+        this(fallbackFontSize, pageWidth, pageHeight,
+                marginTop, marginRight, marginBottom, marginLeft,
+                additionalCss, customFonts, maxPages, false, false);
+    }
+
     /** Resolves page dimensions from a page size name (A4, LETTER, LEGAL). */
     public static float[] pageDimensions(String pageSize) {
         return switch (pageSize.toUpperCase()) {
