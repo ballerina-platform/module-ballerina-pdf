@@ -91,6 +91,8 @@ public class ConversionOptions {
     private final String additionalCss;
     private final List<FontEntry> customFonts;
     private final Integer maxPages;
+    private final boolean customPageSizeSet;
+    private final boolean customMarginsSet;
 
     /** Full constructor with all options. */
     public ConversionOptions(float fallbackFontSize,
@@ -98,7 +100,8 @@ public class ConversionOptions {
                             float marginTop, float marginRight,
                             float marginBottom, float marginLeft,
                             String additionalCss,
-                            List<FontEntry> customFonts, Integer maxPages) {
+                            List<FontEntry> customFonts, Integer maxPages,
+                            boolean customPageSizeSet, boolean customMarginsSet) {
         if (fallbackFontSize <= 0) {
             throw new IllegalArgumentException("fallbackFontSize must be positive, got: " + fallbackFontSize);
         }
@@ -133,6 +136,8 @@ public class ConversionOptions {
         this.additionalCss = additionalCss;
         this.customFonts = customFonts;
         this.maxPages = maxPages;
+        this.customPageSizeSet = customPageSizeSet;
+        this.customMarginsSet = customMarginsSet;
     }
 
     /** Resolves page dimensions from a page size name (A4, LETTER, LEGAL). */
@@ -192,6 +197,16 @@ public class ConversionOptions {
     /** Returns the maximum number of pages, or null for no limit. */
     public Integer getMaxPages() {
         return maxPages;
+    }
+
+    /** Returns true if the page size was explicitly set by the user via API. */
+    public boolean isCustomPageSizeSet() {
+        return customPageSizeSet;
+    }
+
+    /** Returns true if the margins were explicitly set by the user via API. */
+    public boolean isCustomMarginsSet() {
+        return customMarginsSet;
     }
 
 }

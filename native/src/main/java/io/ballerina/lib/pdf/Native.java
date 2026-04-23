@@ -75,35 +75,51 @@ public final class Native {
                 }
             }
 
-            // Read margins from nested PageMargins record (always present — has default)
+            // Read margins from nested PageMargins record (optional — null means not set by user)
             BMap<BString, Object> margins = (BMap<BString, Object>) options.get(
                     ConversionOptions.KEY_MARGINS);
-            float marginTop = getFloat(margins, ConversionOptions.KEY_MARGIN_TOP);
-            float marginRight = getFloat(margins, ConversionOptions.KEY_MARGIN_RIGHT);
-            float marginBottom = getFloat(margins, ConversionOptions.KEY_MARGIN_BOTTOM);
-            float marginLeft = getFloat(margins, ConversionOptions.KEY_MARGIN_LEFT);
+            float marginTop;
+            float marginRight;
+            float marginBottom;
+            float marginLeft;
+            boolean customMarginsSet = margins != null;
+            if (customMarginsSet) {
+                marginTop = getFloat(margins, ConversionOptions.KEY_MARGIN_TOP);
+                marginRight = getFloat(margins, ConversionOptions.KEY_MARGIN_RIGHT);
+                marginBottom = getFloat(margins, ConversionOptions.KEY_MARGIN_BOTTOM);
+                marginLeft = getFloat(margins, ConversionOptions.KEY_MARGIN_LEFT);
+            } else {
+                marginTop = marginRight = marginBottom = marginLeft = ConversionOptions.DEFAULT_MARGIN;
+            }
 
-            // Resolve page dimensions: string (preset) or record (custom {width, height})
+            // Resolve page dimensions: null means not set by user; string (preset) or record (custom {width, height})
             float pageWidth;
             float pageHeight;
-            // Resolve page dimensions (always present — has default)
+            // Resolve page dimensions (optional — null means not set by user)
             Object pageSizeObj = options.get(ConversionOptions.KEY_PAGE_SIZE);
-            if (TypeUtils.getType(pageSizeObj).getTag() == TypeTags.RECORD_TYPE_TAG) {
-                BMap<BString, Object> customSize = (BMap<BString, Object>) pageSizeObj;
-                pageWidth = getFloat(customSize, ConversionOptions.KEY_PAGE_WIDTH);
-                pageHeight = getFloat(customSize, ConversionOptions.KEY_PAGE_HEIGHT);
+            boolean customPageSizeSet = pageSizeObj != null;
+            if (customPageSizeSet) {
+                if (TypeUtils.getType(pageSizeObj).getTag() == TypeTags.RECORD_TYPE_TAG) {
+                    BMap<BString, Object> customSize = (BMap<BString, Object>) pageSizeObj;
+                    pageWidth = getFloat(customSize, ConversionOptions.KEY_PAGE_WIDTH);
+                    pageHeight = getFloat(customSize, ConversionOptions.KEY_PAGE_HEIGHT);
+                } else {
+                    String pageSizeName = ((BString) pageSizeObj).getValue();
+                    float[] dims = ConversionOptions.pageDimensions(pageSizeName);
+                    pageWidth = dims[0];
+                    pageHeight = dims[1];
+                }
             } else {
-                String pageSizeName = ((BString) pageSizeObj).getValue();
-                float[] dims = ConversionOptions.pageDimensions(pageSizeName);
-                pageWidth = dims[0];
-                pageHeight = dims[1];
+                pageWidth = ConversionOptions.A4_WIDTH;
+                pageHeight = ConversionOptions.A4_HEIGHT;
             }
 
             // Build ConversionOptions
             ConversionOptions opts = new ConversionOptions(
                     fontSize, pageWidth, pageHeight,
                     marginTop, marginRight, marginBottom, marginLeft,
-                    additionalCss, customFonts, maxPages);
+                    additionalCss, customFonts, maxPages,
+                    customPageSizeSet, customMarginsSet);
 
             // Phase 1: Parse HTML
             HtmlPreprocessor preprocessor = new HtmlPreprocessor();
