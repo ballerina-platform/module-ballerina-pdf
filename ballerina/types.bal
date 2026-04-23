@@ -66,8 +66,10 @@ public type Font record {|
 #                     Used when CSS does not specify a font-size for an element. CSS `font-size`
 #                     declarations in the HTML take precedence over this value.
 # + pageSize - Page size for the PDF output. Use a standard preset (A4, LETTER, LEGAL)
-#              or a CustomPageSize record with custom width/height in points. Default: A4.
-# + margins - Page margins in points (top, right, bottom, left). Default: 0 (no page margin; CSS controls spacing).
+#              or a CustomPageSize record with custom width/height in points. When omitted,
+#              the CSS `@page` size rule is used if present, otherwise defaults to A4.
+# + margins - Page margins in points (top, right, bottom, left). When omitted, the CSS
+#             `@page` margin rule is used if present, otherwise defaults to 0 (no page margin).
 # + additionalCss - Additional CSS to inject into the document before conversion.
 #                   Use this for consumer-specific style overrides without modifying the HTML.
 # + customFonts - Custom fonts to register for the conversion. Each entry specifies the font family,
@@ -76,8 +78,8 @@ public type Font record {|
 #              this page limit. Must be greater than 0 when provided.
 public type ConversionOptions record {|
     float fallbackFontSize = 12.0;
-    PageSize pageSize = A4;
-    PageMargins margins = {};
+    PageSize pageSize?;
+    PageMargins margins?;
     string additionalCss?;
     Font[] customFonts?;
     int maxPages?;

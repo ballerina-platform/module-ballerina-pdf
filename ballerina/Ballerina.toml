@@ -2,7 +2,7 @@
 distribution = "2201.13.1"
 org = "ballerina"
 name = "pdf"
-version = "0.9.0"
+version = "0.9.1"
 license = ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["pdf", "html", "html-to-pdf", "converter", "document"]
@@ -18,8 +18,8 @@ graalvmCompatible = false
 [[platform.java21.dependency]]
 groupId = "io.ballerina.lib"
 artifactId = "pdf-native"
-version = "0.9.0"
-path = "../native/build/libs/pdf-native-0.9.0.jar"
+version = "0.9.1"
+path = "../native/build/libs/pdf-native-0.9.1-SNAPSHOT.jar"
 
 [[platform.java21.dependency]]
 groupId = "org.apache.pdfbox"

@@ -36,11 +36,15 @@ public class LayoutContext {
 
     private final FontManager fontManager;
     private final float fallbackFontSize;
+    private final boolean customPageSizeSet;
+    private final boolean customMarginsSet;
 
     /** Creates a layout context from font manager and conversion options. */
     public LayoutContext(FontManager fontManager, ConversionOptions options) {
         this.fontManager = fontManager;
         this.fallbackFontSize = options.getFallbackFontSize();
+        this.customPageSizeSet = options.isCustomPageSizeSet();
+        this.customMarginsSet = options.isCustomMarginsSet();
         // Initialize from ConversionOptions (these are defaults; configureFromPageRule may override)
         this.pageWidth = options.getPageWidth();
         this.pageHeight = options.getPageHeight();
@@ -52,9 +56,10 @@ public class LayoutContext {
 
     /**
      * Configures page dimensions from @page CSS rule values.
+     * User-provided API settings take priority and are never overridden by CSS.
      */
     public void configureFromPageRule(String pageSize, String pageMargin) {
-        if (pageSize != null) {
+        if (pageSize != null && !customPageSizeSet) {
             String lower = pageSize.trim().toLowerCase();
             if (lower.equals("a4")) {
                 pageWidth = ConversionOptions.A4_WIDTH;
@@ -69,7 +74,7 @@ public class LayoutContext {
             // Could parse explicit dimensions if needed
         }
 
-        if (pageMargin != null) {
+        if (pageMargin != null && !customMarginsSet) {
             String[] parts = pageMargin.trim().split("\\s+");
             switch (parts.length) {
                 case 1 -> {
