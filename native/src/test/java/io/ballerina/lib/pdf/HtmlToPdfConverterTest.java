@@ -19,7 +19,10 @@
 package io.ballerina.lib.pdf;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -78,6 +81,24 @@ class HtmlToPdfConverterTest {
         }
     }
 
+    private int countImagesInPdf(byte[] pdf) throws Exception {
+        try (PDDocument doc = Loader.loadPDF(pdf)) {
+            int count = 0;
+            for (int i = 0; i < doc.getNumberOfPages(); i++) {
+                PDResources resources = doc.getPage(i).getResources();
+                if (resources == null) {
+                    continue;
+                }
+                for (COSName name : resources.getXObjectNames()) {
+                    if (resources.getXObject(name) instanceof PDImageXObject) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+    }
+
     // ===== Basic conversion =====
 
     @Test
@@ -114,6 +135,7 @@ class HtmlToPdfConverterTest {
                 + "<img src=\"data:image/png;base64," + base64Png + "\" />"
                 + "</body></html>");
         assertValidPdf(pdf);
+        assertTrue(countImagesInPdf(pdf) >= 1, "PDF should contain at least one embedded image");
     }
 
     // ===== Multi-page =====
@@ -446,6 +468,7 @@ class HtmlToPdfConverterTest {
                 + base64Png + "');\">bg</div>"
                 + "</body></html>");
         assertValidPdf(pdf);
+        assertTrue(countImagesInPdf(pdf) >= 1, "PDF should contain background image");
     }
 
     @Test
@@ -482,6 +505,7 @@ class HtmlToPdfConverterTest {
         assertValidPdf(pdf);
         String text = extractText(pdf);
         assertTrue(text.contains("Text before") && text.contains("text after"));
+        assertTrue(countImagesInPdf(pdf) >= 1, "PDF should contain inline image");
     }
 
     @Test

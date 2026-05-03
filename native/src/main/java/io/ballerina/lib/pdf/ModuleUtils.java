@@ -38,7 +38,7 @@ public final class ModuleUtils {
      * @param env Ballerina environment
      */
     public static void setModule(Environment env) {
-        //abstract window toolkit is required for PDFBox to work in headless mode
+        // Required by PDFBox's PDF-to-image rendering (PDFRenderer) in headless environments
         System.setProperty("java.awt.headless", "true");
         module = env.getCurrentModule();
     }

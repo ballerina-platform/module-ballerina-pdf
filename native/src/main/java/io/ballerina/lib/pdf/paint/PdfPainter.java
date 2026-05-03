@@ -37,7 +37,6 @@ import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.apache.pdfbox.pdmodel.interactive.documentnavigation.destination.PDPageXYZDestination;
 import org.apache.pdfbox.util.Matrix;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -222,17 +221,17 @@ public class PdfPainter {
         boolean hasRadius = tlr > 0 || trr > 0 || brr > 0 || blr > 0;
 
         String bgColor = style.getBackgroundColor();
-        Color color = ColorParser.parse(bgColor);
-        if (color != null && color.getAlpha() > 0) {
-            float alpha = (color.getAlpha() / RGB_MAX) * style.getOpacity();
+        RgbColor color = ColorParser.parse(bgColor);
+        if (color != null && color.alpha() > 0) {
+            float alpha = (color.alpha() / RGB_MAX) * style.getOpacity();
             float pdfY = toPdfY(layoutY, height);
             if (alpha < 1.0f) {
                 stream.saveGraphicsState();
                 applyAlpha(stream, alpha, false);
             }
             stream.setNonStrokingColor(
-                    color.getRed() / RGB_MAX, color.getGreen() / RGB_MAX,
-                    color.getBlue() / RGB_MAX);
+                    color.red() / RGB_MAX, color.green() / RGB_MAX,
+                    color.blue() / RGB_MAX);
             if (hasRadius) {
                 addRoundedRectPath(stream, pdfX, pdfY, width, height, tlr, trr, brr, blr);
             } else {
@@ -284,12 +283,12 @@ public class PdfPainter {
         // CSS spec: first shadow in the list is painted on top, so paint in reverse order
         for (int si = shadows.size() - 1; si >= 0; si--) {
             ComputedStyle.BoxShadow shadow = shadows.get(si);
-            Color shadowColor = ColorParser.parse(shadow.color());
+            RgbColor shadowColor = ColorParser.parse(shadow.color());
             if (shadowColor == null) {
-                shadowColor = new Color(0, 0, 0, 128);
+                shadowColor = new RgbColor(0, 0, 0, 128);
             }
 
-            float baseAlpha = (shadowColor.getAlpha() / RGB_MAX) * style.getOpacity();
+            float baseAlpha = (shadowColor.alpha() / RGB_MAX) * style.getOpacity();
 
             if (shadow.blur() <= 0) {
                 // No blur — single crisp layer at full opacity
@@ -301,8 +300,8 @@ public class PdfPainter {
 
                 stream.saveGraphicsState();
                 applyAlpha(stream, baseAlpha, false);
-                stream.setNonStrokingColor(shadowColor.getRed() / RGB_MAX,
-                        shadowColor.getGreen() / RGB_MAX, shadowColor.getBlue() / RGB_MAX);
+                stream.setNonStrokingColor(shadowColor.red() / RGB_MAX,
+                        shadowColor.green() / RGB_MAX, shadowColor.blue() / RGB_MAX);
 
                 if (hasRadius) {
                     addRoundedRectPath(stream, sx, sy, sw, sh,
@@ -328,8 +327,8 @@ public class PdfPainter {
 
                     stream.saveGraphicsState();
                     applyAlpha(stream, layerAlpha, false);
-                    stream.setNonStrokingColor(shadowColor.getRed() / RGB_MAX,
-                            shadowColor.getGreen() / RGB_MAX, shadowColor.getBlue() / RGB_MAX);
+                    stream.setNonStrokingColor(shadowColor.red() / RGB_MAX,
+                            shadowColor.green() / RGB_MAX, shadowColor.blue() / RGB_MAX);
 
                     if (hasRadius) {
                         addRoundedRectPath(stream, sx, sy, sw, sh,
@@ -379,7 +378,7 @@ public class PdfPainter {
                 return;
             }
 
-            Color color = ColorParser.parse(style.getBorderTopColor());
+            RgbColor color = ColorParser.parse(style.getBorderTopColor());
             if (color == null) {
                 color = ColorParser.parse(style.getBorderRightColor());
             }
@@ -390,16 +389,16 @@ public class PdfPainter {
                 color = ColorParser.parse(style.getBorderLeftColor());
             }
             if (color == null) {
-                color = Color.BLACK;
+                color = new RgbColor(0, 0, 0);
             }
 
-            float alpha = (color.getAlpha() / RGB_MAX) * opacity;
+            float alpha = (color.alpha() / RGB_MAX) * opacity;
             if (alpha < 1.0f) {
                 stream.saveGraphicsState();
                 applyAlpha(stream, alpha, true);
             }
             stream.setStrokingColor(
-                    color.getRed() / RGB_MAX, color.getGreen() / RGB_MAX, color.getBlue() / RGB_MAX);
+                    color.red() / RGB_MAX, color.green() / RGB_MAX, color.blue() / RGB_MAX);
             stream.setLineWidth(avgBorderWidth);
             addRoundedRectPath(stream, pdfX, pdfY, width, height, tlr, trr, brr, blr);
             stream.stroke();
@@ -413,11 +412,11 @@ public class PdfPainter {
 
         // Top border — inset by half width so stroke stays within border box
         if (box.getBorderTopWidth() > 0 && !isNoneBorderStyle(style.getBorderTopStyle())) {
-            Color color = ColorParser.parse(style.getBorderTopColor());
+            RgbColor color = ColorParser.parse(style.getBorderTopColor());
             if (color == null) {
-                color = Color.BLACK;
+                color = new RgbColor(0, 0, 0);
             }
-            float alpha = (color.getAlpha() / RGB_MAX) * opacity;
+            float alpha = (color.alpha() / RGB_MAX) * opacity;
             if (alpha < 1.0f) {
                 stream.saveGraphicsState();
                 applyAlpha(stream, alpha, true);
@@ -432,11 +431,11 @@ public class PdfPainter {
 
         // Bottom border — inset by half width
         if (box.getBorderBottomWidth() > 0 && !isNoneBorderStyle(style.getBorderBottomStyle())) {
-            Color color = ColorParser.parse(style.getBorderBottomColor());
+            RgbColor color = ColorParser.parse(style.getBorderBottomColor());
             if (color == null) {
-                color = Color.BLACK;
+                color = new RgbColor(0, 0, 0);
             }
-            float alpha = (color.getAlpha() / RGB_MAX) * opacity;
+            float alpha = (color.alpha() / RGB_MAX) * opacity;
             if (alpha < 1.0f) {
                 stream.saveGraphicsState();
                 applyAlpha(stream, alpha, true);
@@ -451,11 +450,11 @@ public class PdfPainter {
 
         // Left border — inset by half width
         if (box.getBorderLeftWidth() > 0 && !isNoneBorderStyle(style.getBorderLeftStyle())) {
-            Color color = ColorParser.parse(style.getBorderLeftColor());
+            RgbColor color = ColorParser.parse(style.getBorderLeftColor());
             if (color == null) {
-                color = Color.BLACK;
+                color = new RgbColor(0, 0, 0);
             }
-            float alpha = (color.getAlpha() / RGB_MAX) * opacity;
+            float alpha = (color.alpha() / RGB_MAX) * opacity;
             if (alpha < 1.0f) {
                 stream.saveGraphicsState();
                 applyAlpha(stream, alpha, true);
@@ -470,11 +469,11 @@ public class PdfPainter {
 
         // Right border — inset by half width
         if (box.getBorderRightWidth() > 0 && !isNoneBorderStyle(style.getBorderRightStyle())) {
-            Color color = ColorParser.parse(style.getBorderRightColor());
+            RgbColor color = ColorParser.parse(style.getBorderRightColor());
             if (color == null) {
-                color = Color.BLACK;
+                color = new RgbColor(0, 0, 0);
             }
-            float alpha = (color.getAlpha() / RGB_MAX) * opacity;
+            float alpha = (color.alpha() / RGB_MAX) * opacity;
             if (alpha < 1.0f) {
                 stream.saveGraphicsState();
                 applyAlpha(stream, alpha, true);
@@ -520,9 +519,9 @@ public class PdfPainter {
 
         // Text color
         ComputedStyle style = textRun.getStyle();
-        Color textColor = Color.BLACK;
+        RgbColor textColor = new RgbColor(0, 0, 0);
         if (style != null && style.getColor() != null) {
-            Color parsed = ColorParser.parse(style.getColor());
+            RgbColor parsed = ColorParser.parse(style.getColor());
             if (parsed != null) {
                 textColor = parsed;
             }
@@ -552,7 +551,7 @@ public class PdfPainter {
         }
 
         // Apply opacity
-        float textAlpha = (textColor.getAlpha() / RGB_MAX) * (style != null ? style.getOpacity() : 1.0f);
+        float textAlpha = (textColor.alpha() / RGB_MAX) * (style != null ? style.getOpacity() : 1.0f);
         if (textAlpha < 1.0f) {
             stream.saveGraphicsState();
             applyAlpha(stream, textAlpha, false);
@@ -564,8 +563,8 @@ public class PdfPainter {
             stream.beginText();
             stream.setFont(segment.font(), fontSize);
             stream.setNonStrokingColor(
-                    textColor.getRed() / RGB_MAX, textColor.getGreen() / RGB_MAX,
-                    textColor.getBlue() / RGB_MAX);
+                    textColor.red() / RGB_MAX, textColor.green() / RGB_MAX,
+                    textColor.blue() / RGB_MAX);
             if (letterSpacing != 0) {
                 stream.setCharacterSpacing(letterSpacing);
             }
@@ -741,10 +740,10 @@ public class PdfPainter {
     }
 
     private void drawLine(PDPageContentStream stream, float x1, float y1, float x2, float y2,
-                           float lineWidth, Color color) throws IOException {
+                           float lineWidth, RgbColor color) throws IOException {
         stream.setStrokingColor(
-                color.getRed() / RGB_MAX, color.getGreen() / RGB_MAX,
-                color.getBlue() / RGB_MAX);
+                color.red() / RGB_MAX, color.green() / RGB_MAX,
+                color.blue() / RGB_MAX);
         stream.setLineWidth(lineWidth);
         stream.moveTo(x1, y1);
         stream.lineTo(x2, y2);

@@ -23,16 +23,12 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.imageio.ImageIO;
 
 /**
  * Decodes base64 data URL images into PDImageXObject for PDFBox rendering.
@@ -76,13 +72,7 @@ public class ImageDecoder {
 
         try {
             byte[] imageBytes = Base64.getDecoder().decode(base64Data);
-            BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imageBytes));
-            if (bufferedImage == null) {
-                return null;
-            }
-
-            PDImageXObject image = org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory
-                    .createFromImage(document, bufferedImage);
+            PDImageXObject image = PDImageXObject.createFromByteArray(document, imageBytes, null);
             cache.put(src, image);
             return image;
         } catch (IOException | IllegalArgumentException e) {
