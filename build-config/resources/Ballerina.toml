@@ -5,7 +5,7 @@ name = "pdf"
 version = "@toml.version@"
 license = ["Apache-2.0"]
 authors = ["Ballerina"]
-keywords = ["pdf", "html", "html-to-pdf", "converter", "document"]
+keywords = ["pdf", "html", "html-to-pdf", "converter", "document", "Type/Library", "Area/Storage & File Management"]
 # icon = "icon.png" # TODO: Add icon
 repository = "https://github.com/ballerina-platform/module-ballerina-pdf"
 
