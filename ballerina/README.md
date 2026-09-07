@@ -1,6 +1,12 @@
-The `ballerina/pdf` module provides functionality to convert HTML content to PDF documents and read data from existing PDFs. It processes HTML strings — including full documents, fragments, and messy real-world markup — and produces PDF byte arrays suitable for writing to files or sending over the network.
+## Overview
 
-All processing is done locally with no external service dependencies.
+The `pdf` module provides functionality to convert HTML content to PDF documents and extract data from existing PDFs, with all processing done locally and no external service dependencies.
+
+## Key Features
+
+- Convert HTML strings to PDF documents, including custom fonts, page size, and margins
+- Extract text content from existing PDFs
+- Convert PDF pages to Base64-encoded images
 
 ## Quickstart
 
