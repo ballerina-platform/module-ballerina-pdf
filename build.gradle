@@ -76,9 +76,18 @@ subprojects {
 
 def moduleVersion = project.version.replace("-SNAPSHOT", "")
 
-tasks.named('build') {
-    dependsOn(':pdf-native:build')
-    dependsOn(':pdf-ballerina:build')
+if (tasks.names.contains('build')) {
+    tasks.named('build') {
+        dependsOn(':pdf-native:build')
+        dependsOn(':pdf-ballerina:build')
+
+    }
+} else {
+    tasks.register('build') {
+        dependsOn(':pdf-native:build')
+        dependsOn(':pdf-ballerina:build')
+
+    }
 }
 
 release {
