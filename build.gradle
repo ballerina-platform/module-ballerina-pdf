@@ -57,6 +57,9 @@ allprojects {
 
 subprojects {
     apply plugin: 'jacoco'
+    jacoco {
+        toolVersion = jacocoVersion
+    }
 
     configurations {
         ballerinaStdLibs
@@ -73,7 +76,7 @@ subprojects {
 
 def moduleVersion = project.version.replace("-SNAPSHOT", "")
 
-task build {
+tasks.named('build') {
     dependsOn(':pdf-native:build')
     dependsOn(':pdf-ballerina:build')
 }
