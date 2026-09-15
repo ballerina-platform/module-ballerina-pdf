@@ -67,6 +67,7 @@ dependencies {
     implementation "org.slf4j:slf4j-jdk14:${slf4jVersion}"
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.4'
 
     checkstyle project(':checkstyle')
     checkstyle "com.puppycrawl.tools:checkstyle:${checkstylePluginVersion}"
