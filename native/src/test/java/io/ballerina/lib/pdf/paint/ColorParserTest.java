@@ -20,8 +20,6 @@ package io.ballerina.lib.pdf.paint;
 
 import org.junit.jupiter.api.Test;
 
-import java.awt.Color;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -30,114 +28,114 @@ class ColorParserTest {
 
     @Test
     void parsesSixDigitHex() {
-        Color c = ColorParser.parse("#ff0000");
+        RgbColor c = ColorParser.parse("#ff0000");
         assertNotNull(c);
-        assertEquals(255, c.getRed());
-        assertEquals(0, c.getGreen());
-        assertEquals(0, c.getBlue());
+        assertEquals(255, c.red());
+        assertEquals(0, c.green());
+        assertEquals(0, c.blue());
     }
 
     @Test
     void parsesThreeDigitHex() {
-        Color c = ColorParser.parse("#f00");
+        RgbColor c = ColorParser.parse("#f00");
         assertNotNull(c);
-        assertEquals(255, c.getRed());
-        assertEquals(0, c.getGreen());
-        assertEquals(0, c.getBlue());
+        assertEquals(255, c.red());
+        assertEquals(0, c.green());
+        assertEquals(0, c.blue());
     }
 
     @Test
     void parsesRgb() {
-        Color c = ColorParser.parse("rgb(0, 128, 255)");
+        RgbColor c = ColorParser.parse("rgb(0, 128, 255)");
         assertNotNull(c);
-        assertEquals(0, c.getRed());
-        assertEquals(128, c.getGreen());
-        assertEquals(255, c.getBlue());
+        assertEquals(0, c.red());
+        assertEquals(128, c.green());
+        assertEquals(255, c.blue());
     }
 
     @Test
     void parsesRgba() {
-        Color c = ColorParser.parse("rgba(255, 0, 0, 0.5)");
+        RgbColor c = ColorParser.parse("rgba(255, 0, 0, 0.5)");
         assertNotNull(c);
-        assertEquals(255, c.getRed());
-        assertEquals(0, c.getGreen());
-        assertEquals(0, c.getBlue());
-        assertEquals(127, c.getAlpha());
+        assertEquals(255, c.red());
+        assertEquals(0, c.green());
+        assertEquals(0, c.blue());
+        assertEquals(127, c.alpha());
     }
 
     @Test
     void parsesNamedColors() {
-        assertEquals(new Color(0, 0, 0), ColorParser.parse("black"));
-        assertEquals(new Color(255, 255, 255), ColorParser.parse("white"));
+        assertEquals(new RgbColor(0, 0, 0), ColorParser.parse("black"));
+        assertEquals(new RgbColor(255, 255, 255), ColorParser.parse("white"));
 
-        Color navy = ColorParser.parse("navy");
+        RgbColor navy = ColorParser.parse("navy");
         assertNotNull(navy);
-        assertEquals(0, navy.getRed());
-        assertEquals(0, navy.getGreen());
-        assertEquals(128, navy.getBlue());
+        assertEquals(0, navy.red());
+        assertEquals(0, navy.green());
+        assertEquals(128, navy.blue());
 
-        Color transparent = ColorParser.parse("transparent");
+        RgbColor transparent = ColorParser.parse("transparent");
         assertNotNull(transparent);
-        assertEquals(0, transparent.getAlpha());
+        assertEquals(0, transparent.alpha());
     }
 
     @Test
     void parsesExtendedNamedColors() {
-        Color coral = ColorParser.parse("coral");
+        RgbColor coral = ColorParser.parse("coral");
         assertNotNull(coral);
-        assertEquals(255, coral.getRed());
-        assertEquals(127, coral.getGreen());
-        assertEquals(80, coral.getBlue());
+        assertEquals(255, coral.red());
+        assertEquals(127, coral.green());
+        assertEquals(80, coral.blue());
 
-        Color crimson = ColorParser.parse("crimson");
+        RgbColor crimson = ColorParser.parse("crimson");
         assertNotNull(crimson);
-        assertEquals(220, crimson.getRed());
-        assertEquals(20, crimson.getGreen());
-        assertEquals(60, crimson.getBlue());
+        assertEquals(220, crimson.red());
+        assertEquals(20, crimson.green());
+        assertEquals(60, crimson.blue());
 
-        Color rebeccapurple = ColorParser.parse("rebeccapurple");
+        RgbColor rebeccapurple = ColorParser.parse("rebeccapurple");
         assertNotNull(rebeccapurple);
-        assertEquals(102, rebeccapurple.getRed());
-        assertEquals(51, rebeccapurple.getGreen());
-        assertEquals(153, rebeccapurple.getBlue());
+        assertEquals(102, rebeccapurple.red());
+        assertEquals(51, rebeccapurple.green());
+        assertEquals(153, rebeccapurple.blue());
 
         // cyan and aqua are aliases (both 0, 255, 255)
-        Color cyan = ColorParser.parse("cyan");
-        Color aqua = ColorParser.parse("aqua");
+        RgbColor cyan = ColorParser.parse("cyan");
+        RgbColor aqua = ColorParser.parse("aqua");
         assertNotNull(cyan);
         assertNotNull(aqua);
         assertEquals(cyan, aqua);
 
         // magenta and fuchsia are aliases (both 255, 0, 255)
-        Color magenta = ColorParser.parse("magenta");
-        Color fuchsia = ColorParser.parse("fuchsia");
+        RgbColor magenta = ColorParser.parse("magenta");
+        RgbColor fuchsia = ColorParser.parse("fuchsia");
         assertNotNull(magenta);
         assertNotNull(fuchsia);
         assertEquals(magenta, fuchsia);
 
         // grey/gray variants
-        Color darkgray = ColorParser.parse("darkgray");
-        Color darkgrey = ColorParser.parse("darkgrey");
+        RgbColor darkgray = ColorParser.parse("darkgray");
+        RgbColor darkgrey = ColorParser.parse("darkgrey");
         assertNotNull(darkgray);
         assertEquals(darkgray, darkgrey);
-        assertEquals(169, darkgray.getRed());
+        assertEquals(169, darkgray.red());
 
-        Color tomato = ColorParser.parse("tomato");
+        RgbColor tomato = ColorParser.parse("tomato");
         assertNotNull(tomato);
-        assertEquals(255, tomato.getRed());
-        assertEquals(99, tomato.getGreen());
-        assertEquals(71, tomato.getBlue());
+        assertEquals(255, tomato.red());
+        assertEquals(99, tomato.green());
+        assertEquals(71, tomato.blue());
     }
 
     @Test
     void isCaseInsensitive() {
-        Color upper = ColorParser.parse("#FF0000");
+        RgbColor upper = ColorParser.parse("#FF0000");
         assertNotNull(upper);
-        assertEquals(255, upper.getRed());
+        assertEquals(255, upper.red());
 
-        Color rgbUpper = ColorParser.parse("RGB(1,2,3)");
+        RgbColor rgbUpper = ColorParser.parse("RGB(1,2,3)");
         assertNotNull(rgbUpper);
-        assertEquals(1, rgbUpper.getRed());
+        assertEquals(1, rgbUpper.red());
     }
 
     @Test
@@ -156,38 +154,38 @@ class ColorParserTest {
     @Test
     void clampsOutOfRangeValues() {
         // Regex only matches non-negative integers, so test with 300 > 255
-        Color c = ColorParser.parse("rgb(300, 0, 128)");
+        RgbColor c = ColorParser.parse("rgb(300, 0, 128)");
         assertNotNull(c);
-        assertEquals(255, c.getRed());
-        assertEquals(0, c.getGreen());
-        assertEquals(128, c.getBlue());
+        assertEquals(255, c.red());
+        assertEquals(0, c.green());
+        assertEquals(128, c.blue());
     }
 
     @Test
     void parsesRgbPercentages() {
-        Color c = ColorParser.parse("rgb(100%, 50%, 0%)");
+        RgbColor c = ColorParser.parse("rgb(100%, 50%, 0%)");
         assertNotNull(c);
-        assertEquals(255, c.getRed());
-        assertEquals(128, c.getGreen());
-        assertEquals(0, c.getBlue());
+        assertEquals(255, c.red());
+        assertEquals(128, c.green());
+        assertEquals(0, c.blue());
     }
 
     @Test
     void parsesRgbaPercentages() {
-        Color c = ColorParser.parse("rgba(100%, 0%, 50%, 0.5)");
+        RgbColor c = ColorParser.parse("rgba(100%, 0%, 50%, 0.5)");
         assertNotNull(c);
-        assertEquals(255, c.getRed());
-        assertEquals(0, c.getGreen());
-        assertEquals(128, c.getBlue());
-        assertEquals(127, c.getAlpha());
+        assertEquals(255, c.red());
+        assertEquals(0, c.green());
+        assertEquals(128, c.blue());
+        assertEquals(127, c.alpha());
     }
 
     @Test
     void parsesRgbaAlphaPercentage() {
-        Color c = ColorParser.parse("rgba(255, 0, 0, 50%)");
+        RgbColor c = ColorParser.parse("rgba(255, 0, 0, 50%)");
         assertNotNull(c);
-        assertEquals(255, c.getRed());
-        assertEquals(127, c.getAlpha());
+        assertEquals(255, c.red());
+        assertEquals(127, c.alpha());
     }
 
     @Test

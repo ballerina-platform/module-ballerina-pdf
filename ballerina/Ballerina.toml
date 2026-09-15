@@ -13,7 +13,7 @@ repository = "https://github.com/ballerina-platform/module-ballerina-pdf"
 observabilityIncluded = true
 
 [platform.java21]
-graalvmCompatible = false
+graalvmCompatible = true
 
 [[platform.java21.dependency]]
 groupId = "io.ballerina.lib"

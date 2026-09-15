@@ -52,6 +52,15 @@ function testRendersBase64Image() returns error? {
     assertValidPdf(pdf, "Base64 image");
     string[] pages = check extractText(pdf);
     test:assertEquals(pages.length(), 1, "PDF with small image should be 1 page");
+    // Verify the image actually rendered by converting to page image
+    string[] pageImages = check toImages(pdf);
+    test:assertTrue(pageImages.length() > 0, "Should produce page images");
+
+    // Compare against a blank page — a page with a rendered image produces a larger PNG
+    byte[] blankPdf = check parseHtml("<html><body></body></html>");
+    string[] blankImages = check toImages(blankPdf);
+    test:assertTrue(pageImages[0].length() > blankImages[0].length(),
+        "Page with image should produce larger rendered output than blank page");
 }
 
 @test:Config {}
@@ -367,6 +376,16 @@ function testRendersBackgroundImage() returns error? {
     string[] pages = check extractText(pdf);
     string text = joinPages(pages);
     test:assertTrue(text.includes("Over image"), "Should render text over background image");
+    // Verify the background image rendered by comparing against same layout without image
+    string[] pageImages = check toImages(pdf);
+    byte[] noImgPdf = check parseHtml(string `<html><head><style>
+        #bgimg { width: 300px; height: 100px; }
+        </style></head><body>
+        <div id="bgimg">Over image</div>
+        </body></html>`);
+    string[] noImgImages = check toImages(noImgPdf);
+    test:assertTrue(pageImages[0].length() > noImgImages[0].length(),
+        "Page with background image should produce larger rendered output than without");
 }
 
 // --- Empty body test ---
