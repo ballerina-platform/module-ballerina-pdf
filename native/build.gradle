@@ -23,11 +23,6 @@ plugins {
 
 group = 'io.ballerina.lib'
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
-
 repositories {
     mavenCentral()
     mavenLocal()
@@ -66,7 +61,8 @@ dependencies {
     // Logging
     implementation "org.slf4j:slf4j-jdk14:${slf4jVersion}"
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:${junitPlatformLauncherVersion}"
 
     checkstyle project(':checkstyle')
     checkstyle "com.puppycrawl.tools:checkstyle:${checkstylePluginVersion}"
