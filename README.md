@@ -7,9 +7,9 @@
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerina-pdf.svg)](https://github.com/ballerina-platform/module-ballerina-pdf/commits/main)
 [![GitHub Issues](https://img.shields.io/github/issues/ballerina-platform/ballerina-library/module/pdf.svg?label=Open%20Issues)](https://github.com/ballerina-platform/ballerina-library/labels/module%2Fpdf)
 
-The `ballerina/pdf` module provides functionality to convert HTML content to PDF documents and read data from existing PDFs. It processes HTML strings — including full documents, fragments, and messy real-world markup — and produces PDF byte arrays suitable for writing to files or sending over the network.
+## Overview
 
-All processing is done locally with no external service dependencies.
+The `pdf` module provides functionality to convert HTML content to PDF documents and extract data from existing PDFs, with all processing done locally and no external service dependencies.
 
 ## Quickstart
 
