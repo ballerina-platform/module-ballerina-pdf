@@ -45,9 +45,6 @@ dependencies {
     externalJars(group: 'org.apache.pdfbox', name: 'fontbox', version: "${pdfboxVersion}") {
         transitive = false
     }
-    externalJars(group: 'commons-logging', name: 'commons-logging', version: "${commonsLoggingVersion}") {
-        transitive = false
-    }
     externalJars(group: 'org.jsoup', name: 'jsoup', version: "${jsoupVersion}") {
         transitive = false
     }
@@ -93,7 +90,6 @@ task updateTomlFiles {
         def newBallerinaToml = ballerinaTomlFilePlaceHolder.text.replace("@project.version@", project.version)
         newBallerinaToml = newBallerinaToml.replace("@toml.version@", tomlVersion)
         newBallerinaToml = newBallerinaToml.replace("@pdfbox.version@", project.pdfboxVersion)
-        newBallerinaToml = newBallerinaToml.replace("@commons.logging.version@", project.commonsLoggingVersion)
         newBallerinaToml = newBallerinaToml.replace("@jsoup.version@", project.jsoupVersion)
         newBallerinaToml = newBallerinaToml.replace("@slf4j.version@", project.slf4jVersion)
         newBallerinaToml = newBallerinaToml.replace("@htmlunit.cssparser.version@", project.htmlunitCssparserVersion)
