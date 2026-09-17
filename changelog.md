@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [[#9132] Add `Type/Library` and `Area/Storage & File Management` Keywords, Reformat README for Connector Store Discoverability](https://github.com/ballerina-platform/ballerina-library/issues/9132)
 
+### Fixed
+- [Conflicting jar file warnings from bundled logging dependencies on build](https://github.com/ballerina-platform/ballerina-library/issues/9121)
+
 ## [0.9.1] - 2026-04-23
 
 ### Added
