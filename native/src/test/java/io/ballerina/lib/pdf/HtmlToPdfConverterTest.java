@@ -19,12 +19,22 @@
 package io.ballerina.lib.pdf;
 
 import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
+import javax.imageio.ImageIO;
 
 import static io.ballerina.lib.pdf.ConversionOptions.A4_HEIGHT;
 import static io.ballerina.lib.pdf.ConversionOptions.A4_WIDTH;
@@ -48,6 +58,8 @@ class HtmlToPdfConverterTest {
             DEFAULT_FALLBACK_FONT_SIZE, A4_WIDTH, A4_HEIGHT,
             DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN, DEFAULT_MARGIN,
             null, null, null);
+
+    private static final int SOLID_RED = 0xFF0000;
 
     private byte[] convert(String html) throws Exception {
         Document doc = preprocessor.preprocess(html);
@@ -75,6 +87,61 @@ class HtmlToPdfConverterTest {
     private String extractText(byte[] pdf) throws Exception {
         try (PDDocument doc = Loader.loadPDF(pdf)) {
             return new PDFTextStripper().getText(doc);
+        }
+    }
+
+    private int countImagesInPdf(byte[] pdf) throws Exception {
+        try (PDDocument doc = Loader.loadPDF(pdf)) {
+            int count = 0;
+            for (int i = 0; i < doc.getNumberOfPages(); i++) {
+                PDResources resources = doc.getPage(i).getResources();
+                if (resources == null) {
+                    continue;
+                }
+                for (COSName name : resources.getXObjectNames()) {
+                    if (resources.getXObject(name) instanceof PDImageXObject) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+    }
+
+    private static BufferedImage solidImage(int width, int height, int rgb) {
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                image.setRGB(x, y, rgb);
+            }
+        }
+        return image;
+    }
+
+    private static String solidImageDataUrl(String format, int width, int height, int rgb) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ImageIO.write(solidImage(width, height, rgb), format, out);
+        return "data:image/" + format + ";base64," + Base64.getEncoder().encodeToString(out.toByteArray());
+    }
+
+    private int countNearRedPixels(byte[] pdf) throws Exception {
+        try (PDDocument doc = Loader.loadPDF(pdf)) {
+            BufferedImage page = new PDFRenderer(doc).renderImage(0);
+            int count = 0;
+            for (int y = 0; y < page.getHeight(); y++) {
+                for (int x = 0; x < page.getWidth(); x++) {
+                    int rgb = page.getRGB(x, y);
+                    int red = (rgb >> 16) & 0xFF;
+                    int green = (rgb >> 8) & 0xFF;
+                    int blue = rgb & 0xFF;
+                    // Tolerance rather than an exact match, so colour management and
+                    // edge anti-aliasing cannot break the assertion.
+                    if (red > 200 && green < 80 && blue < 80) {
+                        count++;
+                    }
+                }
+            }
+            return count;
         }
     }
 
@@ -114,6 +181,31 @@ class HtmlToPdfConverterTest {
                 + "<img src=\"data:image/png;base64," + base64Png + "\" />"
                 + "</body></html>");
         assertValidPdf(pdf);
+        assertTrue(countImagesInPdf(pdf) >= 1, "PDF should contain at least one embedded image");
+    }
+
+    @Test
+    void jpegDataUrlProducesEmbeddedImage() throws Exception {
+        String dataUrl = solidImageDataUrl("jpeg", 120, 80, SOLID_RED);
+        byte[] pdf = convert("<html><body><img src=\"" + dataUrl + "\" /></body></html>");
+        assertValidPdf(pdf);
+        assertTrue(countImagesInPdf(pdf) >= 1, "PDF should contain the embedded JPEG");
+    }
+
+    @Test
+    void embeddedImageIsActuallyRasterized() throws Exception {
+        String dataUrl = solidImageDataUrl("png", 120, 80, SOLID_RED);
+        byte[] withImage = convert("<html><body><img src=\"" + dataUrl + "\" /></body></html>");
+        byte[] withoutImage = convert("<html><body></body></html>");
+
+        int redWithImage = countNearRedPixels(withImage);
+        int redWithoutImage = countNearRedPixels(withoutImage);
+
+        assertTrue(redWithImage > 200,
+                "Rendered page should contain the red image block, found " + redWithImage
+                        + " red pixels");
+        assertEquals(0, redWithoutImage,
+                "Control page without the image should render no red pixels");
     }
 
     // ===== Multi-page =====
@@ -446,6 +538,7 @@ class HtmlToPdfConverterTest {
                 + base64Png + "');\">bg</div>"
                 + "</body></html>");
         assertValidPdf(pdf);
+        assertTrue(countImagesInPdf(pdf) >= 1, "PDF should contain background image");
     }
 
     @Test
@@ -482,6 +575,7 @@ class HtmlToPdfConverterTest {
         assertValidPdf(pdf);
         String text = extractText(pdf);
         assertTrue(text.contains("Text before") && text.contains("text after"));
+        assertTrue(countImagesInPdf(pdf) >= 1, "PDF should contain inline image");
     }
 
     @Test
