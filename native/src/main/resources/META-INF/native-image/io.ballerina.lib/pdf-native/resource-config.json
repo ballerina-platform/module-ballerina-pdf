@@ -1,0 +1,18 @@
+{
+  "resources": {
+    "includes": [
+      { "pattern": "org/apache/pdfbox/resources/.*" },
+      { "pattern": "org/apache/fontbox/cmap/.*" },
+      { "pattern": "\\Qorg/apache/fontbox/unicode/Scripts.txt\\E" },
+      { "pattern": "\\Qfonts/LiberationSans-Regular.ttf\\E" },
+      { "pattern": "\\Qfonts/LiberationSans-Bold.ttf\\E" },
+      { "pattern": "\\Qfonts/LiberationSans-Italic.ttf\\E" },
+      { "pattern": "\\Qfonts/LiberationSans-BoldItalic.ttf\\E" },
+      { "pattern": "\\Qfonts/LiberationSerif-Regular.ttf\\E" },
+      { "pattern": "\\Qfonts/LiberationSerif-Bold.ttf\\E" },
+      { "pattern": "\\Qfonts/LiberationSerif-Italic.ttf\\E" },
+      { "pattern": "\\Qfonts/LiberationSerif-BoldItalic.ttf\\E" },
+      { "pattern": "\\Qfonts/NotoSansSymbols2-Regular.ttf\\E" }
+    ]
+  }
+}
