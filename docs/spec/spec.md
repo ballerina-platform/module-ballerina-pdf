@@ -1,212 +1,135 @@
 _Owners_: @yashodhanmohandevan \
 _Reviewers_: @yashodhanmohandevan \
 _Created_: 2025/01/01 \
-_Updated_: 2026/02/28 \
+_Updated_: 2026/08/16 \
 _Edition_: Swan Lake
 
-# Specification: Ballerina PDF Module
+# Specification: Ballerina PDF Library
 
 ## Introduction
 
-This is the specification for the `pdf` module of the [Ballerina language](https://ballerina.io/), which provides functionality for HTML-to-PDF conversion and PDF reading operations.
+This is the specification for the `pdf` standard library of the [Ballerina language](https://ballerina.io/), which provides functionality for HTML-to-PDF conversion and PDF reading operations.
 
-The `pdf` module specification has evolved over time. This specification is written to describe the functionality available from version 0.9.0 onwards.
+The `pdf` library specification has evolved over time. This specification is written to describe the functionality available from version 0.9.0 onwards.
 
-If you have any feedback or suggestions about the module, start a discussion via a [GitHub issue](https://github.com/ballerina-platform/ballerina-library/issues) or in the [Discord server](https://discord.gg/ballerinalang). Based on the outcome of the discussion, the specification and implementation can be updated. Community contributions are also encouraged. If you notice an implementation that deviates from the specification, please raise an issue.
+If you have any feedback or suggestions about the library, start a discussion via a [GitHub issue](https://github.com/ballerina-platform/ballerina-library/issues) or in the [Discord server](https://discord.gg/ballerinalang). Based on the outcome of the discussion, the specification and implementation can be updated. Community contributions are also encouraged. If you notice an implementation that deviates from the specification, please raise an issue.
 
 ## Contents
 
 1. [Overview](#1-overview)
-2. [Configurations](#2-configurations)
-   - 2.1. [ConversionOptions](#21-conversionoptions)
-   - 2.2. [PageSize](#22-pagesize)
-   - 2.3. [PageMargins](#23-pagemargins)
-   - 2.4. [Font](#24-font)
-3. [Functions](#3-functions)
-   - 3.1. [HTML-to-PDF Conversion](#31-html-to-pdf-conversion)
-   - 3.2. [Text Extraction](#32-text-extraction)
-   - 3.3. [Image Conversion](#33-image-conversion)
-4. [Error Types](#4-error-types)
-5. [Samples](#5-samples)
-   - 5.1. [Basic HTML-to-PDF Conversion](#51-basic-html-to-pdf-conversion)
-   - 5.2. [Conversion with Custom Options](#52-conversion-with-custom-options)
-   - 5.3. [Text Extraction](#53-text-extraction)
-   - 5.4. [Image Conversion](#54-image-conversion)
+2. [HTML-to-PDF Conversion](#2-html-to-pdf-conversion)
+   - 2.1. [The `parseHtml()` Function](#21-the-parsehtml-function)
+   - 2.2. [Conversion Options](#22-conversion-options)
+     - 2.2.1. [Fallback Font Size](#221-fallback-font-size)
+     - 2.2.2. [Page Size](#222-page-size)
+     - 2.2.3. [Page Margins](#223-page-margins)
+     - 2.2.4. [Additional CSS](#224-additional-css)
+     - 2.2.5. [Custom Fonts](#225-custom-fonts)
+     - 2.2.6. [Maximum Pages](#226-maximum-pages)
+3. [PDF Reading](#3-pdf-reading)
+   - 3.1. [Text Extraction](#31-text-extraction)
+   - 3.2. [Image Conversion](#32-image-conversion)
+4. [Errors](#4-errors)
 
 ## 1. Overview
 
-The `ballerina/pdf` module provides:
+The `pdf` library provides three capabilities:
 
-- **HTML-to-PDF conversion**: Convert HTML strings (full documents, fragments, or messy real-world markup) to PDF byte arrays.
-- **Text extraction**: Extract text content from existing PDF documents (from bytes, file paths, or URLs).
-- **Image conversion**: Convert PDF pages to Base64-encoded PNG images (from bytes, file paths, or URLs).
+- **HTML-to-PDF conversion**: Converting HTML content to a PDF document.
+- **Text extraction**: Extracting the text content of an existing PDF document, page by page.
+- **Image conversion**: Rendering the pages of an existing PDF document as images.
 
-All processing is performed locally with no external service dependencies. The module uses a custom HTML/CSS renderer with Apache PDFBox for PDF generation.
+All processing is performed locally within the Ballerina runtime. The library does not depend on any external service, browser, or system-installed tool, which makes it suitable for environments with data-compliance restrictions on sending content to third parties.
 
-## 2. Configurations
+## 2. HTML-to-PDF Conversion
 
-### 2.1. ConversionOptions
+### 2.1. The `parseHtml()` Function
 
-Controls HTML-to-PDF conversion behavior. All fields have defaults and are optional.
+The `pdf:parseHtml()` function converts an HTML string to a PDF document and returns its content as a byte array.
 
-| Field | Type | Default | Description |
-|---|---|---|---|
-| `fallbackFontSize` | `float` | `12.0` | Fallback font size in points (CSS spec "medium"). CSS `font-size` declarations take precedence. |
-| `pageSize` | `PageSize` | `A4` | Page size preset or custom dimensions. |
-| `margins` | `PageMargins` | `{}` | Page margins in points (all zeros by default). |
-| `additionalCss` | `string?` | `nil` | Additional CSS to inject before conversion. |
-| `customFonts` | `Font[]?` | `nil` | Custom TTF fonts to register. Referenced via `font-family` in CSS. |
-| `maxPages` | `int?` | `nil` | Maximum pages in output. Content is scaled to fit. Must be > 0 when provided. |
+The input can be a complete HTML document or a fragment. Real-world HTML is often malformed — encoding mismatches, duplicate CSS properties, unclosed or self-closing elements — so the input is sanitized into a well-formed document before rendering. A conversion fails only when the input cannot be interpreted as HTML at all, in which case a `pdf:HtmlParseError` is returned.
 
-`ConversionOptions` uses the spread parameter pattern (`*ConversionOptions`) so fields can be passed as named arguments directly to `parseHtml()`.
+The rendered output aims to visually match the same HTML rendered in a browser. Styling is taken from the document's own CSS (inline styles, `<style>` blocks, and `@page` rules), and can be extended or overridden through the conversion options described below. Any failure in the layout or rendering stage is returned as a `pdf:RenderError`.
 
-### 2.2. PageSize
-
-A union type: `StandardPageSize|CustomPageSize`.
-
-**StandardPageSize** (enum):
-
-| Value | Dimensions (points) |
-|---|---|
-| `A4` | 595 x 842 |
-| `LETTER` | 612 x 792 |
-| `LEGAL` | 612 x 1008 |
-
-**CustomPageSize** (record):
-
-| Field | Type | Description |
-|---|---|---|
-| `width` | `float` | Page width in points (1 point = 1/72 inch) |
-| `height` | `float` | Page height in points |
-
-### 2.3. PageMargins
-
-| Field | Type | Default | Description |
-|---|---|---|---|
-| `top` | `float` | `0` | Top margin in points |
-| `right` | `float` | `0` | Right margin in points |
-| `bottom` | `float` | `0` | Bottom margin in points |
-| `left` | `float` | `0` | Left margin in points |
-
-### 2.4. Font
-
-| Field | Type | Default | Description |
-|---|---|---|---|
-| `family` | `string` | — | CSS `font-family` name used to reference this font |
-| `content` | `byte[]` | — | TTF font file content |
-| `bold` | `boolean` | `false` | Whether this is a bold variant |
-| `italic` | `boolean` | `false` | Whether this is an italic variant |
-
-The module bundles Liberation Sans and Liberation Serif fonts (metrically compatible with Arial and Times New Roman). Custom fonts supplement these bundled fonts.
-
-## 3. Functions
-
-All functions are `isolated` and return the data type or `Error`.
-
-### 3.1. HTML-to-PDF Conversion
+###### Example: Converting HTML to PDF
 
 ```ballerina
-isolated function parseHtml(string html, *ConversionOptions options) returns byte[]|Error
+byte[] pdfContent = check pdf:parseHtml("<h1>Hello World</h1>");
 ```
 
-Converts an HTML string to PDF bytes. Accepts full HTML documents, fragments, or messy real-world markup. The pipeline: HTML preprocessing (cleanup, CSS injection) → DOM parsing → layout → PDF rendering.
+### 2.2. Conversion Options
 
-Returns `HtmlParseError` if the HTML cannot be parsed, or `RenderError` if the rendering pipeline fails.
+The conversion behavior is controlled through the `pdf:ConversionOptions` record. It is defined as an included record parameter of `pdf:parseHtml()`, so each option can be passed directly as a named argument. Every option has a default and may be omitted; calling `pdf:parseHtml()` with only the HTML string is valid. Providing an invalid option value (such as a non-positive page dimension) causes the conversion to fail with a `pdf:RenderError`.
 
-### 3.2. Text Extraction
+###### Example: Converting with Options
 
 ```ballerina
-isolated function extractText(byte[] pdf) returns string[]|Error
-isolated function fileExtractText(string filePath) returns string[]|Error
-isolated function urlExtractText(string url) returns string[]|Error
+byte[] pdfContent = check pdf:parseHtml(html,
+    pageSize = pdf:LETTER,
+    margins = {top: 72, right: 54, bottom: 72, left: 54}
+);
 ```
 
-Extracts text content from each page of a PDF document. Returns a `string[]` where each element contains the text of one page. The three variants accept PDF bytes, a local file path, or a URL respectively.
+#### 2.2.1. Fallback Font Size
 
-Returns `ReadError` on failure.
+The `fallbackFontSize` option sets the font size (in points) used for elements whose size is not determined by the document's CSS. It defaults to `12.0`, which corresponds to the CSS `medium` keyword. A `font-size` declared in the document's CSS always takes precedence over this value; the option only fills the gap when the CSS is silent. The value must be positive.
 
-### 3.3. Image Conversion
+#### 2.2.2. Page Size
+
+The `pageSize` option sets the page dimensions of the output PDF. It accepts either a standard preset — `A4`, `LETTER`, or `LEGAL`, defined by the `pdf:StandardPageSize` enum — or arbitrary dimensions given as a `pdf:CustomPageSize` value in points (1 point = 1/72 inch). The presets correspond to `A4` (595 × 842 pt), `LETTER` (612 × 792 pt), and `LEGAL` (612 × 1008 pt).
+
+The page size is resolved with the following precedence:
+
+1. An explicitly provided `pageSize` option.
+2. A `size` declared in the document's CSS `@page` rule.
+3. The default, `A4`.
+
+#### 2.2.3. Page Margins
+
+The `margins` option sets the top, right, bottom, and left page margins in points, using the `pdf:PageMargins` record. Margin values must be non-negative. Margins follow the same precedence as the page size: an explicitly provided option overrides the document's CSS `@page` margins, and when neither is present, all margins default to zero so the content spans the full page.
+
+#### 2.2.4. Additional CSS
+
+The `additionalCss` option injects extra CSS into the document before conversion. The injected styles are applied on top of the document's own styles, so they can override them. This allows a consumer to restyle a document — adjust fonts, hide elements, fix layout issues — without modifying the HTML source, which is useful when the HTML comes from an external system.
+
+#### 2.2.5. Custom Fonts
+
+The renderer only uses fonts that are registered with it; it does not fall back to fonts installed on the host system. This keeps the output identical across environments. The library bundles the Liberation Sans and Liberation Serif font families, which are metrically compatible with Arial and Times New Roman respectively, so common documents render correctly with no configuration.
+
+The `customFonts` option registers additional TrueType fonts for a conversion. Each `pdf:Font` entry carries the font-family name, the TTF file content, and flags marking it as a bold and/or italic variant; each variant of a family is registered as a separate entry. The document's CSS then selects a registered font through the standard `font-family` property.
+
+#### 2.2.6. Maximum Pages
+
+The `maxPages` option caps the number of pages in the output PDF. When the laid-out content would exceed the cap, the content is scaled down uniformly so that it fits within exactly that many pages; content is never truncated. The value must be greater than zero. When the option is omitted, the output has as many pages as the content requires.
+
+## 3. PDF Reading
+
+The library provides operations for reading existing PDF documents. Each operation has three variants that differ only in where the PDF is read from:
+
+- from a byte array already in memory,
+- from a file path on the local file system (the `file*` variants), or
+- from a URL (the `url*` variants).
+
+All reading operations are page-oriented: they return an array with one element per page, in page order. A failure — a corrupted or password-protected document, an unreadable file, or an unreachable URL — is returned as a `pdf:ReadError`.
+
+### 3.1. Text Extraction
+
+The `pdf:extractText()`, `pdf:fileExtractText()`, and `pdf:urlExtractText()` functions extract the text content of a PDF document. Each element of the returned array contains the text of one page.
+
+###### Example: Extracting Text from a PDF File
 
 ```ballerina
-isolated function toImages(byte[] pdf) returns string[]|Error
-isolated function fileToImages(string filePath) returns string[]|Error
-isolated function urlToImages(string url) returns string[]|Error
+string[] pages = check pdf:fileExtractText("document.pdf");
 ```
 
-Converts each page of a PDF document to a Base64-encoded PNG image. Returns a `string[]` where each element is a Base64-encoded PNG string. The three variants accept PDF bytes, a local file path, or a URL respectively.
+### 3.2. Image Conversion
 
-Returns `ReadError` on failure.
+The `pdf:toImages()`, `pdf:fileToImages()`, and `pdf:urlToImages()` functions render each page of a PDF document as a PNG image. Each element of the returned array is one page's image, encoded as a Base64 string.
 
-## 4. Error Types
+## 4. Errors
 
-The module defines a distinct error hierarchy:
+All operations of the library return the `pdf:Error` type on failure. It is a distinct error type with three distinct subtypes, so a caller can handle failures broadly or narrow them to a specific stage:
 
-```
-Error (base)
-├── HtmlParseError  — HTML parsing or preprocessing failure
-├── RenderError     — PDF rendering pipeline failure (layout, painting, generation)
-└── ReadError       — PDF reading failure (text extraction, image conversion)
-```
-
-All error types are `distinct` subtypes of the base `Error` type.
-
-## 5. Samples
-
-### 5.1. Basic HTML-to-PDF Conversion
-
-```ballerina
-import ballerina/io;
-import ballerina/pdf;
-
-public function main() returns error? {
-    byte[] pdfBytes = check pdf:parseHtml("<h1>Hello World</h1><p>Generated with Ballerina.</p>");
-    check io:fileWriteBytes("output.pdf", pdfBytes);
-}
-```
-
-### 5.2. Conversion with Custom Options
-
-```ballerina
-import ballerina/io;
-import ballerina/pdf;
-
-public function main() returns error? {
-    string html = check io:fileReadString("report.html");
-
-    byte[] pdfBytes = check pdf:parseHtml(html,
-        fallbackFontSize = 10.0,
-        pageSize = pdf:LETTER,
-        margins = {top: 72, right: 54, bottom: 72, left: 54},
-        additionalCss = "body { font-family: sans-serif; }"
-    );
-
-    check io:fileWriteBytes("report.pdf", pdfBytes);
-}
-```
-
-### 5.3. Text Extraction
-
-```ballerina
-import ballerina/io;
-import ballerina/pdf;
-
-public function main() returns error? {
-    string[] pages = check pdf:fileExtractText("document.pdf");
-    foreach int i in 0 ..< pages.length() {
-        io:println("Page ", i + 1, ": ", pages[i]);
-    }
-}
-```
-
-### 5.4. Image Conversion
-
-```ballerina
-import ballerina/io;
-import ballerina/pdf;
-
-public function main() returns error? {
-    byte[] pdfBytes = check io:fileReadBytes("document.pdf");
-    string[] base64Images = check pdf:toImages(pdfBytes);
-    // Each element is a Base64-encoded PNG string (one per page)
-}
-```
+- `pdf:HtmlParseError` — the input HTML could not be parsed or preprocessed into a document.
+- `pdf:RenderError` — the rendering pipeline (layout, painting, or PDF generation) failed, or a conversion option value was invalid.
+- `pdf:ReadError` — a PDF reading operation failed because the document was corrupted, invalid, or inaccessible.
