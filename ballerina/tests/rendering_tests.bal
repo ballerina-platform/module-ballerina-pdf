@@ -52,6 +52,11 @@ function testRendersBase64Image() returns error? {
     assertValidPdf(pdf, "Base64 image");
     string[] pages = check extractText(pdf);
     test:assertEquals(pages.length(), 1, "PDF with small image should be 1 page");
+    // Rasterization must run and produce a real PNG. "iVBORw0KGgo" is the base64
+    // encoding of the PNG signature. Pixel-level checks live in HtmlToPdfConverterTest.
+    string[] pageImages = check toImages(pdf);
+    test:assertTrue(pageImages.length() > 0, "Should produce page images");
+    test:assertTrue(pageImages[0].startsWith("iVBORw0KGgo"), "toImages should return PNG data");
 }
 
 @test:Config {}
@@ -367,6 +372,9 @@ function testRendersBackgroundImage() returns error? {
     string[] pages = check extractText(pdf);
     string text = joinPages(pages);
     test:assertTrue(text.includes("Over image"), "Should render text over background image");
+    string[] pageImages = check toImages(pdf);
+    test:assertTrue(pageImages.length() > 0, "Should produce page images");
+    test:assertTrue(pageImages[0].startsWith("iVBORw0KGgo"), "toImages should return PNG data");
 }
 
 // --- Empty body test ---
