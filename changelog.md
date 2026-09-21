@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- [Add GraalVM native-image compatibility](https://github.com/ballerina-platform/ballerina-library/issues/9194)
+
 ### Changed
 - [[#9132] Add `Type/Library` and `Area/Storage & File Management` Keywords, Reformat README for Connector Store Discoverability](https://github.com/ballerina-platform/ballerina-library/issues/9132)
 
