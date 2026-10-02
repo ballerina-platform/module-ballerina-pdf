@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.2] - 2026-10-02
+
 ### Added
 - [Add GraalVM native-image compatibility](https://github.com/ballerina-platform/ballerina-library/issues/9194)
 
