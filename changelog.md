@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Update `jsoup` to 1.23.2 to fix CVE-2026-75140 (denial of service via deeply nested XML documents)
+
 ## [0.9.2] - 2026-10-02
 
 ### Added
