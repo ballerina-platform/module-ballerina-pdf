@@ -2,11 +2,11 @@
 distribution = "2201.13.1"
 org = "ballerina"
 name = "pdf"
-version = "0.9.2"
+version = "0.9.3"
 license = ["Apache-2.0"]
 authors = ["Ballerina"]
 keywords = ["pdf", "html", "html-to-pdf", "converter", "document", "Type/Library", "Area/Storage & File Management", "Name/PDF"]
-# icon = "icon.png" # TODO: Add icon
+icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerina-pdf"
 
 [build-options]
@@ -18,8 +18,8 @@ graalvmCompatible = true
 [[platform.java21.dependency]]
 groupId = "io.ballerina.lib"
 artifactId = "pdf-native"
-version = "0.9.2"
-path = "../native/build/libs/pdf-native-0.9.2.jar"
+version = "0.9.3"
+path = "../native/build/libs/pdf-native-0.9.3-SNAPSHOT.jar"
 
 [[platform.java21.dependency]]
 groupId = "org.apache.pdfbox"
