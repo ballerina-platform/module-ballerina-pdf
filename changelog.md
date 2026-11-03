@@ -5,7 +5,10 @@ This file contains all the notable changes done to the Ballerina `pdf` package t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.9.3] - 2026-10-08
+
+### Added
+- [[#9274] Add package icon for the stdlib packages missing a logo in the Integration Store](https://github.com/ballerina-platform/ballerina-library/issues/9274)
 
 ### Fixed
 - Update `jsoup` to 1.23.2 to fix CVE-2026-75140 (denial of service via deeply nested XML documents)
@@ -13,7 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.9.2] - 2026-10-02
 
 ### Added
-- [[#9274] Add package icon for the stdlib packages missing a logo in the Integration Store](https://github.com/ballerina-platform/ballerina-library/issues/9274)
 - [Add GraalVM native-image compatibility](https://github.com/ballerina-platform/ballerina-library/issues/9194)
 
 ### Changed
